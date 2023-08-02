@@ -13,10 +13,93 @@ string rtrim(const string &);
  *  1. STRING_ARRAY crossword
  *  2. STRING words
  */
-
-vector<string> crosswordPuzzle(vector<string> crossword, string words) {
-
+bool checkVertical(int i,int j,string s,vector<string> cw)
+{
+    if((int)cw.size()-j<(int)s.size())
+    return false;
+    int k=0;
+    while(k<(int)s.size())
+    {
+        if(cw[i][j]==s[k] || cw[i][j]=='-')
+        {
+            j++;
+            k++;
+        }
+        else
+        return false;
+    }
+    return true;
 }
+bool checkHorizontal(int i,int j,string s,vector<string> cw)
+{
+    if((int)cw[0].size()-i<(int)s.size())
+    return false;
+    int k=0;
+    while(k<(int)s.size())
+    {
+        if(cw[i][j]==s[k] || cw[i][j]=='-')
+        {
+            i++;
+            k++;
+        }
+        else
+        return false;
+    }
+    return true;
+}
+vector<string> fun(int u,vector<string> &cw,vector<string> &word)
+{
+    if(u==word.size())
+    return cw;
+    string s=word[u];
+    for(int i=0;i<cw.size();i++)
+    {
+        for(int j=0;j<cw[0].size();j++)
+        {
+            if(checkVertical(i,j,s,cw))
+            {
+                vector<string> dcw=cw;
+                int k=0,y=j;
+                while(k<(int)s.size())
+                {
+                    dcw[i][y]=s[k];
+                    y++;
+                    k++;
+                }
+                vector<string> ans=fun(u+1,dcw,word);
+                if(ans.size()!=0)
+                return ans;
+            }
+            if(checkHorizontal(i,j,s,cw))
+            {
+                vector<string> dcw=cw;
+                int k=0,x=i;
+                while(k<(int)s.size())
+                {
+                    dcw[x][j]=s[k];
+                    x++;
+                    k++;
+                }
+                vector<string> ans=fun(u+1,dcw,word);
+                if(ans.size()!=0)
+                return ans;
+            }
+        }
+    }
+    return {};
+}
+vector<string> crosswordPuzzle(vector<string> crossword, string words) 
+{
+    stringstream sin(words);
+    string w;
+    vector<string> v;
+    while(getline(sin,w,';'))
+    {
+        v.push_back(w);
+    }
+    return fun(0,crossword,v);
+}
+
 
 int main()
 {
